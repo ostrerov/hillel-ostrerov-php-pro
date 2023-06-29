@@ -4,29 +4,23 @@ namespace Classes;
 
 class Boat extends Transport
 {
-    private int $numPassengers;
-    private int $maxPassengers;
-    private string $engineType;
-
     /**
      * @param  string  $name
      * @param  string  $type
      * @param  int  $speed
+     * @param  int  $maxPassengers
      * @param  int  $numPassengers
      * @param  string  $engineType
      */
     public function __construct(
-        string $name,
-        string $type,
-        int $speed,
-        int $maxPassengers,
-        int $numPassengers,
-        string $engineType
+        protected string $name,
+        protected string $type,
+        protected int $speed,
+        private int $maxPassengers,
+        private int $numPassengers,
+        private string $engineType
     ) {
         parent::__construct($name, $type, $speed);
-        $this->maxPassengers = $maxPassengers;
-        $this->numPassengers = $numPassengers;
-        $this->engineType = $engineType;
     }
 
     /**

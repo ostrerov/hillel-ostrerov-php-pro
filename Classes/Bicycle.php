@@ -4,9 +4,6 @@ namespace Classes;
 
 class Bicycle extends Transport
 {
-    private int $numGears;
-    private int $numTransmissions;
-
     /**
      * @param  string  $name
      * @param  string  $type
@@ -14,11 +11,14 @@ class Bicycle extends Transport
      * @param  int  $numGears
      * @param  int  $numTransmissions
      */
-    public function __construct(string $name, string $type, int $speed, int $numGears, int $numTransmissions)
-    {
+    public function __construct(
+        protected string $name,
+        protected string $type,
+        protected int $speed,
+        private int $numGears,
+        private int $numTransmissions
+    ) {
         parent::__construct($name, $type, $speed);
-        $this->numGears = $numGears;
-        $this->numTransmissions = $numTransmissions;
     }
 
     /**

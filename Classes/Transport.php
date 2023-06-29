@@ -13,7 +13,8 @@ class Transport
         protected string $name = 'Транспорт',
         protected string $type = 'Т/З',
         protected int $speed = 0
-    ) {}
+    ) {
+    }
 
     /**
      * @return string
@@ -79,8 +80,7 @@ class Transport
     {
         $objects = [];
 
-        foreach ($data as $object)
-        {
+        foreach ($data as $object) {
             $objects[] = $object->getInfo();
         }
 
