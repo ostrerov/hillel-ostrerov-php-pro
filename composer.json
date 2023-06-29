@@ -1,0 +1,17 @@
+{
+    "name": "ostrerov/hw2",
+    "description": "PHP Pro Hillel HW2",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Classes\\": "Classes/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Daniil Ostrerov",
+            "email": "ostrerov.daniil@gmail.com"
+        }
+    ],
+    "require": {}
+}
