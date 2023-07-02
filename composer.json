@@ -1,10 +1,10 @@
 {
-    "name": "ostrerov/hw2",
-    "description": "PHP Pro Hillel HW2",
-    "type": "project",
+    "name": "ostrerov/hw4",
+    "description": "PHP Pro Hillel HW4 - Daniil Ostrerov",
     "autoload": {
         "psr-4": {
-            "Classes\\": "Classes/"
+            "Classes\\": "Classes/",
+            "Classes\\NotifyType\\": "Classes/NotifyType"
         }
     },
     "authors": [
