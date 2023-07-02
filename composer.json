@@ -1,10 +1,15 @@
 {
-    "name": "ostrerov/hw2",
-    "description": "PHP Pro Hillel HW2",
-    "type": "project",
+    "name": "ostrerov/hw3",
+    "description": "PHP Pro Hillel HW3 - Daniil Ostrerov",
     "autoload": {
         "psr-4": {
-            "Classes\\": "Classes/"
+            "Classes\\Example1\\": "Classes/Example1",
+            "Classes\\Example1\\OrdersType\\": "Classes/Example1/OrdersType",
+            "Classes\\Example1\\InvoiceTypes\\": "Classes/Example1/InvoiceTypes",
+            "Interfaces\\Example1\\": "Interfaces/Example1",
+            "Classes\\Example2\\": "Classes/Example2",
+            "Classes\\Example2\\FileExtensions\\": "Classes/Example2/FileExtensions",
+            "Interfaces\\Example2\\": "Interfaces/Example2"
         }
     },
     "authors": [
