@@ -62,8 +62,8 @@ class BookService
      * @param  int  $id
      * @return int
      */
-    public function destroy(int $id): int
+    public function destroy(int $id): void
     {
-        return $this->bookRepository->destroy($id);
+        $this->bookRepository->destroy($id);
     }
 }
