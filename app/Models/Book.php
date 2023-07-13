@@ -9,16 +9,10 @@ class Book extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-
-    protected $table = 'books';
-
-    protected $primaryKey = 'id';
-
     protected $fillable = [
         'name',
-        'author',
         'year',
-        'countPages',
+        'lang',
+        'pages',
     ];
 }

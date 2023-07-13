@@ -2,58 +2,90 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Book\DestroyBookRequest;
+use App\Http\Requests\Book\IndexBookRequest;
 use App\Http\Requests\Book\StoreBookRequest;
+use App\Http\Requests\Book\ShowBookRequest;
 use App\Http\Requests\Book\UpdateBookRequest;
 use App\Http\Resources\BookResource;
 use App\Models\Book;
+use App\Repositories\Books\BookIndexDTO;
+use App\Repositories\Books\BookStoreDTO;
+use App\Repositories\Books\BookUpdateDTO;
+use App\Services\BookService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
-class BookController extends Controller
+class BookController
 {
-    public function index()
+    /**
+     * @param  BookService  $bookService
+     */
+    public function __construct(protected BookService $bookService)
     {
-        return BookResource::collection(Book::all());
+    }
+
+    /**
+     * @param  IndexBookRequest  $request
+     * @return JsonResponse
+     */
+    public function index(IndexBookRequest $request): JsonResponse
+    {
+        $dto = new BookIndexDTO(...$request->validated());
+        $service = $this->bookService->index($dto);
+        $resource = BookResource::collection($service);
+
+        return $resource->response()->setStatusCode(200);
     }
 
     /**
      * @param  StoreBookRequest  $request
-     * @return BookResource
+     * @return JsonResponse
      */
-    public function store(StoreBookRequest $request): BookResource
+    public function store(StoreBookRequest $request): JsonResponse
     {
-        return new BookResource(Book::create($request->validated()));
+        $dto = new BookStoreDTO(...$request->validated());
+        $service = $this->bookService->store($dto);
+        $resource = BookResource::make($service);
+
+        return $resource->response()->setStatusCode(201);
     }
 
     /**
-     * @param  Book  $book
-     * @return BookResource
+     * @param  ShowBookRequest  $request
+     * @return JsonResponse
      */
-    public function show(Book $book): BookResource
+    public function show(ShowBookRequest $request): JsonResponse
     {
-        return new BookResource($book);
+        $validated = $request->validated();
+        $service = $this->bookService->show($validated['id']);
+        $resource = BookResource::make($service);
+
+        return $resource->response()->setStatusCode(200);
     }
 
     /**
      * @param  UpdateBookRequest  $request
-     * @param  Book  $book
-     * @return BookResource
+     * @return JsonResponse
      */
-    public function update(UpdateBookRequest $request, Book $book): BookResource
+    public function update(UpdateBookRequest $request): JsonResponse
     {
-        $book->update($request->validated());
+        $dto = new BookUpdateDTO(...$request->validated());
+        $service = $this->bookService->update($dto);
+        $resource = BookResource::make($service);
 
-        return new BookResource($book);
+        return $resource->response()->setStatusCode(200);
     }
 
     /**
-     * @param  Book  $book
-     * @return JsonResponse
+     * @param  DestroyBookRequest  $request
+     * @return Response
      */
-    public function destroy(Book $book): JsonResponse
+    public function destroy(DestroyBookRequest $request): Response
     {
-        $book->delete();
+        $validated = $request->validated();
+        $this->bookService->destroy($validated['id']);
 
-        return response()->json(['status' => 'success']);
+        return response()->noContent(200);
     }
 }

@@ -10,9 +10,9 @@ class StoreBookRequest extends FormRequest
     {
         return [
             'name' => ['required', 'min:12', 'max:128', 'unique:books'],
-            'author' => ['required', 'min:3', 'max:64'],
-            'year' => ['required', 'integer', 'min:1900', 'max:' . date('Y')],
-            'countPages' => ['required', 'integer'],
+            'year' => ['required', 'integer', 'min:1970', 'max:'. date('Y')],
+            'lang' => ['required', 'string', 'in:en,ua,pl,de'],
+            'pages' => ['required', 'integer', 'min:10', 'max:55000']
         ];
     }
 }
