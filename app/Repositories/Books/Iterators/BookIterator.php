@@ -6,11 +6,13 @@ use Carbon\Carbon;
 
 class BookIterator
 {
-    protected int $id;
-    protected string $name;
-    protected int $year;
-    protected string $lang;
-    protected int $pages;
+    public int $id;
+    public string $name;
+    public int $year;
+    public string $lang;
+    public int $pages;
+    public $created_at;
+    public $updated_at;
 
     /**
      * @param object $data
@@ -22,6 +24,8 @@ class BookIterator
         $this->year = $data->year;
         $this->lang = $data->lang;
         $this->pages = $data->pages;
+        $this->created_at = $data->created_at;
+        $this->updated_at = $data->updated_at;
     }
 
     /**

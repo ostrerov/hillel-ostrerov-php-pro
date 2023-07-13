@@ -45,7 +45,7 @@ class BookRepository
             'year' => $data->getYear(),
             'lang' => $data->getLang(),
             'pages' => $data->getPages(),
-            'created_at' => Carbon::now()->timezone('Europe/Kyiv')->format('Y-m-d'),
+            'created_at' => Carbon::now()->timezone('Europe/Kyiv'),
         ]);
     }
 
