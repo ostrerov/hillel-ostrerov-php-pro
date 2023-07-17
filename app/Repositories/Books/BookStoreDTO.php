@@ -4,17 +4,20 @@ namespace App\Repositories\Books;
 
 class BookStoreDTO
 {
+
     /**
      * @param  string  $name
      * @param  int  $year
      * @param  string  $lang
      * @param  int  $pages
+     * @param  int  $categoryId
      */
     public function __construct(
         protected string $name,
         protected int $year,
         protected string $lang,
         protected int $pages,
+        protected int $categoryId
     ) {
     }
 
@@ -48,5 +51,13 @@ class BookStoreDTO
     public function getPages(): int
     {
         return $this->pages;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCategoryId(): int
+    {
+        return $this->categoryId;
     }
 }

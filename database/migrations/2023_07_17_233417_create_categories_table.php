@@ -5,21 +5,18 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up()
+    public function up(): void
     {
-        Schema::create('books', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->unsignedBigInteger('year');
-            $table->enum('lang', ['en', 'ua', 'pl', 'de']);
-            $table->unsignedBigInteger('pages');
             $table->timestamps();
             $table->softDeletes();
         });
     }
 
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('books');
+        Schema::dropIfExists('categories');
     }
 };

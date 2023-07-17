@@ -19,3 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('/books', \App\Http\Controllers\BookController::class);
+Route::get('/books/all', [\App\Http\Controllers\BookController::class, 'showAll']);
+Route::apiResource('/categories', \App\Http\Controllers\CategoryController::class);
