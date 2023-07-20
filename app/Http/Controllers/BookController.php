@@ -14,6 +14,7 @@ use App\Repositories\Books\BookStoreDTO;
 use App\Repositories\Books\BookUpdateDTO;
 use App\Services\BookService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class BookController
@@ -62,6 +63,14 @@ class BookController
         $resource = BookResource::make($service);
 
         return $resource->response()->setStatusCode(200);
+    }
+
+    /**
+     * @return AnonymousResourceCollection
+     */
+    public function showAll(): AnonymousResourceCollection
+    {
+        return BookResource::collection($this->bookService->getAllBooks());
     }
 
     /**

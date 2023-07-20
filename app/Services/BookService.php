@@ -25,8 +25,7 @@ class BookService
      */
     public function index(BookIndexDTO $data): Collection
     {
-        $query = $this->bookRepository->index($data);
-        return $this->bookRepository->getByQuery($query);
+        return $this->bookRepository->index($data);
     }
 
     /**
@@ -65,5 +64,13 @@ class BookService
     public function destroy(int $id): void
     {
         $this->bookRepository->destroy($id);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getAllBooks(): Collection
+    {
+        return $this->bookRepository->getAllBooks();
     }
 }

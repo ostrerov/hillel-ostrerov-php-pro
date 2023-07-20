@@ -2,29 +2,20 @@
 
 namespace App\Http\Resources;
 
-use App\Repositories\Books\Iterators\BookIterator;
+use App\Repositories\Categories\Iterators\CategoryIterator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\Book */
-class BookResource extends JsonResource
+class CategoryResource extends JsonResource
 {
-    /**
-     * @param  Request  $request
-     * @return array
-     */
     public function toArray(Request $request): array
     {
-        /** @var BookIterator $resource */
+        /** @var CategoryIterator $resource */
         $resource = $this->resource;
 
         return [
             'id' => $resource->getId(),
-            'category' => new CategoryResource($resource->getCategory()),
             'name' => $resource->getName(),
-            'year' => $resource->getYear(),
-            'lang' => $resource->getLang(),
-            'pages' => $resource->getPages(),
             'created_at' => $resource->getCreatedAt(),
             'updated_at' => $resource->getUpdatedAt(),
             'deleted_at' => $resource->getDeletedAt()

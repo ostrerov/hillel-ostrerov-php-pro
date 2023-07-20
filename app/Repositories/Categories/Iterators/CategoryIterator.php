@@ -1,35 +1,19 @@
 <?php
 
-namespace App\Repositories\Books\Iterators;
+namespace App\Repositories\Categories\Iterators;
 
-use App\Repositories\Categories\Iterators\CategoryIterator;
-
-class BookIterator
+class CategoryIterator
 {
     protected int $id;
-    protected CategoryIterator $category;
     protected string $name;
-    protected int $year;
-    protected string $lang;
-    protected int $pages;
     protected string|null $createdAt;
     protected string|null $updatedAt;
     protected string|null $deletedAt;
 
-    /**
-     * @param  object  $data
-     */
     public function __construct(object $data)
     {
         $this->id = $data->id;
-        $this->category = new CategoryIterator(
-            $data->category_id,
-            $data->category_name
-        );
         $this->name = $data->name;
-        $this->year = $data->year;
-        $this->lang = $data->lang;
-        $this->pages = $data->pages;
         $this->createdAt = $data->created_at;
         $this->updatedAt = $data->updated_at;
         $this->deletedAt = $data->deleted_at;
@@ -49,30 +33,6 @@ class BookIterator
     public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * @return int
-     */
-    public function getYear(): int
-    {
-        return $this->year;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLang(): string
-    {
-        return $this->lang;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPages(): int
-    {
-        return $this->pages;
     }
 
     /**
@@ -99,11 +59,4 @@ class BookIterator
         return $this->deletedAt;
     }
 
-    /**
-     * @return CategoryIterator
-     */
-    public function getCategory(): CategoryIterator
-    {
-        return $this->category;
-    }
 }
