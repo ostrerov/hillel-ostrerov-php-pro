@@ -28,29 +28,4 @@ class CategoryIterator
     {
         return $this->name;
     }
-
-    /**
-     * @return string|null
-     */
-    public function getCreatedAt(): ?string
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getUpdatedAt(): ?string
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDeletedAt(): ?string
-    {
-        return $this->deletedAt;
-    }
-
 }

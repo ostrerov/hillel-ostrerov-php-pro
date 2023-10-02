@@ -9,7 +9,6 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-
 class CategorySeeder extends Seeder
 {
     /**
@@ -45,8 +44,7 @@ class CategorySeeder extends Seeder
             ];
         }
 
-        foreach (array_chunk($data, 1000) as $category)
-        {
+        foreach (array_chunk($data, 1000) as $category) {
             $this->table->insert($category);
         }
     }
