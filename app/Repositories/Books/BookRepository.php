@@ -11,14 +11,20 @@ use Illuminate\Support\Facades\DB;
 
 class BookRepository
 {
-    /**
-     * @param  BookIndexDTO  $data
-     * @return Collection
-     */
-    public function index(BookIndexDTO $data): Collection
+    protected Builder $query;
+
+    public function __construct()
     {
-        $query = DB::table('books')
-            ->select([
+        $this->query = DB::table('books');
+    }
+
+    /**
+     * @param BookIndexDTO $data
+     * @return Builder
+     */
+    public function index(BookIndexDTO $data): Builder
+    {
+        $this->query->select([
                 'books.id',
                 'books.name',
                 'year',
@@ -29,28 +35,15 @@ class BookRepository
                 'categories.name as category_name'
             ])
             ->join('categories', 'categories.id', '=', 'books.category_id')
-            ->whereBetween('books.created_at', [
-                $data->getStartDate(),
-                $data->getEndDate()
-            ]);
+            ->orderBy('books.id')
+            ->limit(10)
+            ->where('books.id', '>', $data->getLastId());
 
-        if (is_null($data->getYear()) === false) {
-            $query->where('year', '=', $data->getYear());
-        }
-
-        if (is_null($data->getLang()) === false) {
-            $query->where('lang', '=', $data->getLang());
-        }
-
-        $collection = $query->get();
-
-        return $collection->map(function ($item) {
-            return new BookIterator($item);
-        });
+        return $this->query;
     }
 
     /**
-     * @param  BookStoreDTO  $data
+     * @param BookStoreDTO $data
      * @return int
      */
     public function store(BookStoreDTO $data): int
@@ -66,7 +59,7 @@ class BookRepository
     }
 
     /**
-     * @param  int  $id
+     * @param int $id
      * @return Model|Builder|null
      */
     public function show(int $id): Model|Builder|null
@@ -75,7 +68,7 @@ class BookRepository
     }
 
     /**
-     * @param  BookUpdateDTO  $data
+     * @param BookUpdateDTO $data
      * @return int
      */
     public function update(BookUpdateDTO $data): int
@@ -93,8 +86,8 @@ class BookRepository
     }
 
     /**
-     * @param  int  $id
-     * @return int
+     * @param int $id
+     * @return void
      */
     public function destroy(int $id): void
     {
@@ -102,7 +95,7 @@ class BookRepository
     }
 
     /**
-     * @param  int  $id
+     * @param int $id
      * @return BookIterator
      */
     public function getById(int $id): BookIterator
@@ -152,5 +145,16 @@ class BookRepository
         return $collection->map(function ($item) {
             return new BookIterator($item);
         });
+    }
+
+    public function filterByCreatedAt(string $startDate, string $endDate): Builder
+    {
+        return $this->query->where('books.created_at', '>=', $startDate)
+            ->where('books.created_at', '<=', $endDate);
+    }
+
+    public function useCreatedAtIndex(): Builder
+    {
+        return $this->query->useIndex('books_created_at_index');
     }
 }
