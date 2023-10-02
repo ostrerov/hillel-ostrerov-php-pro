@@ -16,9 +16,6 @@ class CategoryResource extends JsonResource
         return [
             'id' => $resource->getId(),
             'name' => $resource->getName(),
-            'created_at' => $resource->getCreatedAt(),
-            'updated_at' => $resource->getUpdatedAt(),
-            'deleted_at' => $resource->getDeletedAt()
         ];
     }
 }

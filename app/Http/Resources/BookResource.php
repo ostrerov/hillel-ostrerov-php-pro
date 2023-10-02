@@ -26,8 +26,6 @@ class BookResource extends JsonResource
             'lang' => $resource->getLang(),
             'pages' => $resource->getPages(),
             'created_at' => $resource->getCreatedAt(),
-            'updated_at' => $resource->getUpdatedAt(),
-            'deleted_at' => $resource->getDeletedAt()
         ];
     }
 }

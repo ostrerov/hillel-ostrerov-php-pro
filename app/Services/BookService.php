@@ -7,6 +7,7 @@ use App\Repositories\Books\BookRepository;
 use App\Repositories\Books\BookStoreDTO;
 use App\Repositories\Books\BookUpdateDTO;
 use App\Repositories\Books\Iterators\BookIterator;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 
 class BookService
@@ -25,7 +26,30 @@ class BookService
      */
     public function index(BookIndexDTO $data): Collection
     {
-        return $this->bookRepository->index($data);
+        $query = $this->bookRepository->index($data);
+
+        $this->getYearQuery($query, $data);
+
+        $this->getLangQuery($query, $data);
+
+        $this->getCreatedAtQuery($query, $data);
+
+        $collection = $query->get();
+
+        return $collection->map(function ($book) {
+            return new BookIterator((object)[
+                'id'            => $book->id,
+                'name'          => $book->name,
+                'year'          => $book->year,
+                'category'      => (object)[
+                    'id'        => $book->category_id,
+                    'name'      => $book->category_name,
+                ],
+                'lang'          => $book->lang,
+                'pages'         => $book->pages,
+                'created_at'    => $book->created_at,
+            ]);
+        });
     }
 
     /**
@@ -58,8 +82,8 @@ class BookService
     }
 
     /**
-     * @param  int  $id
-     * @return int
+     * @param int $id
+     * @return void
      */
     public function destroy(int $id): void
     {
@@ -72,5 +96,44 @@ class BookService
     public function getAllBooks(): Collection
     {
         return $this->bookRepository->getAllBooks();
+    }
+
+    /**
+     * @param Builder $query
+     * @param BookIndexDTO $data
+     * @return void
+     */
+    private function getYearQuery(Builder $query, BookIndexDTO $data): void
+    {
+        if (is_null($data->getYear()) === false) {
+            $query->where('year', '=', $data->getYear());
+        }
+    }
+
+    /**
+     * @param Builder $query
+     * @param BookIndexDTO $data
+     * @return void
+     */
+    private function getLangQuery(Builder $query, BookIndexDTO $data): void
+    {
+        if (is_null($data->getLang()) === false) {
+            $query->where('lang', '=', $data->getLang());
+        }
+    }
+
+    /**
+     * @param Builder $query
+     * @param BookIndexDTO $data
+     * @return void
+     */
+    private function getCreatedAtQuery(Builder $query, BookIndexDTO $data): void
+    {
+        $query->where('books.created_at', '>=', $data->getStartDate())
+            ->where('books.created_at', '<=', $data->getEndDate());
+
+        if (is_null($data->getYear()) === true && is_null($data->getLang()) === true) {
+            $query->useIndex('books_created_at_index');
+        }
     }
 }

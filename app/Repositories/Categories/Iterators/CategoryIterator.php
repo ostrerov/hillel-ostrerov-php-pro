@@ -6,17 +6,11 @@ class CategoryIterator
 {
     protected int $id;
     protected string $name;
-    protected string|null $createdAt;
-    protected string|null $updatedAt;
-    protected string|null $deletedAt;
 
     public function __construct(object $data)
     {
         $this->id = $data->id;
         $this->name = $data->name;
-        $this->createdAt = $data->created_at;
-        $this->updatedAt = $data->updated_at;
-        $this->deletedAt = $data->deleted_at;
     }
 
     /**
