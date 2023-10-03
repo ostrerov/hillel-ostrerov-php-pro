@@ -1,4 +1,4 @@
-GET http://php-pro.loc/api/books/?lastId=2
+GET http://localhost/api/books/?lastId=2
 Content-Type: application/json
 Accept: application/json
 
