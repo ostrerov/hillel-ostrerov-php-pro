@@ -6,9 +6,11 @@ use App\Http\Requests\Authentication\LoginRequest;
 use App\Http\Requests\Authentication\NewUserRequest;
 use App\Http\Resources\UserResource;
 use App\Repositories\Users\NewUserDTO;
+use App\Services\Users\Login\LoginDTO;
+use App\Services\Users\Login\LoginService;
 use App\Services\Users\UserAuthService;
-use App\Services\Users\UserLoginService;
 use App\Services\Users\UserRegisterService;
+use App\Services\Users\UserService;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -16,20 +18,19 @@ use Illuminate\Http\Response;
 class AuthenticationController extends Controller
 {
     public function __construct(
-        protected UserRegisterService $userRegisterService,
         protected UserAuthService $userAuthService,
-        protected UserLoginService $userLoginService,
     ) {
     }
 
     /**
      * @param NewUserRequest $request
+     * @param UserRegisterService $registerService
      * @return JsonResponse
      */
-    public function register(NewUserRequest $request): JsonResponse
+    public function register(NewUserRequest $request, UserRegisterService $registerService): JsonResponse
     {
         $DTO = new NewUserDTO(...$request->validated());
-        $service = $this->userRegisterService->register($DTO);
+        $service = $registerService->register($DTO);
         $resource = new UserResource($service);
 
         return $resource->response()->setStatusCode(201);
@@ -37,19 +38,17 @@ class AuthenticationController extends Controller
 
     /**
      * @param LoginRequest $request
+     * @param LoginService $loginService
      * @return Application|Response|JsonResponse
      */
-    public function login(LoginRequest $request): Application|Response|JsonResponse
+    public function login(LoginRequest $request, LoginService $loginService): Application|Response|JsonResponse
     {
         $data = $request->validated();
-        $user = $this->userLoginService->login($data);
+        $DTO = new LoginDTO(...$data);
+        $user = $loginService->handle($DTO);
 
-        if (is_null($user) === true) {
-            return response(['error' => 'Credentials has not match']);
-        }
-
-        $bearerToken = $this->userAuthService->createUserToken();
-        $resource = new UserResource($user);
+        $resource = new UserResource($user->getUser());
+        $bearerToken = $user->getBearerToken();
 
         return $resource->additional([
             'Bearer' => $bearerToken,
@@ -57,11 +56,12 @@ class AuthenticationController extends Controller
     }
 
     /**
+     * @param UserService $userService
      * @return JsonResponse
      */
-    public function profile(): JsonResponse
+    public function profile(UserService $userService): JsonResponse
     {
-        $user = $this->userLoginService->getUserById(
+        $user = $userService->getById(
             $this->userAuthService->getUserId()
         );
         $resource = new UserResource($user);
