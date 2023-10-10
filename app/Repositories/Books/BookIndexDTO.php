@@ -12,6 +12,7 @@ class BookIndexDTO
      * @param Carbon $endDate
      * @param int|null $year
      * @param Lang|null $lang
+     * @param int $lastId
      */
     public function __construct(
         protected Carbon $startDate,

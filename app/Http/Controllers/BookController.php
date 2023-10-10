@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Book\BookIndexIteratorRequest;
 use App\Http\Requests\Book\DestroyBookRequest;
 use App\Http\Requests\Book\IndexBookRequest;
-use App\Http\Requests\Book\StoreBookRequest;
 use App\Http\Requests\Book\ShowBookRequest;
+use App\Http\Requests\Book\StoreBookRequest;
 use App\Http\Requests\Book\UpdateBookRequest;
-use App\Http\Resources\BookResource;
-use App\Models\Book;
+use App\Http\Resources\Book\BookModelResource;
+use App\Http\Resources\Book\BookResource;
+use App\Http\Resources\Book\BookWithoutAuthorsResource;
 use App\Repositories\Books\BookIndexDTO;
 use App\Repositories\Books\BookStoreDTO;
 use App\Repositories\Books\BookUpdateDTO;
 use App\Services\BookService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -22,8 +25,9 @@ class BookController extends Controller
     /**
      * @param  BookService  $bookService
      */
-    public function __construct(protected BookService $bookService)
-    {
+    public function __construct(
+        protected BookService $bookService
+    ) {
     }
 
     /**
@@ -34,7 +38,41 @@ class BookController extends Controller
     {
         $dto = new BookIndexDTO(...$request->validated());
         $service = $this->bookService->index($dto);
-        $resource = BookResource::collection($service);
+        $resource = BookWithoutAuthorsResource::collection($service)
+            ->additional([
+                'meta' => [
+                    'lastId' => $service->last() ? $service->last()->getId() : null,
+                ]
+            ]);
+
+        return $resource->response()->setStatusCode(200);
+    }
+
+    /**
+     * @param BookIndexIteratorRequest $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function getDataByIterator(BookIndexIteratorRequest $request): JsonResponse
+    {
+        $validatedData = $request->validated();
+        $service = $this->bookService->getDataByIterator($validatedData['lastId']);
+
+        $resource = BookResource::collection($service->getIterator()->getArrayCopy());
+
+        return $resource->response()->setStatusCode(200);
+    }
+
+    /**
+     * @param BookIndexIteratorRequest $request
+     * @return JsonResponse
+     */
+    public function getDataByModel(BookIndexIteratorRequest $request): JsonResponse
+    {
+        $validatedData = $request->validated();
+        $service = $this->bookService->getDataByModel($validatedData['lastId']);
+
+        $resource = BookModelResource::collection($service);
 
         return $resource->response()->setStatusCode(200);
     }
@@ -47,7 +85,7 @@ class BookController extends Controller
     {
         $dto = new BookStoreDTO(...$request->validated());
         $service = $this->bookService->store($dto);
-        $resource = BookResource::make($service);
+        $resource = BookWithoutAuthorsResource::make($service);
 
         return $resource->response()->setStatusCode(201);
     }
@@ -60,7 +98,7 @@ class BookController extends Controller
     {
         $validated = $request->validated();
         $service = $this->bookService->show($validated['id']);
-        $resource = BookResource::make($service);
+        $resource = BookWithoutAuthorsResource::make($service);
 
         return $resource->response()->setStatusCode(200);
     }
@@ -70,7 +108,7 @@ class BookController extends Controller
      */
     public function showAll(): AnonymousResourceCollection
     {
-        return BookResource::collection($this->bookService->getAllBooks());
+        return BookWithoutAuthorsResource::collection($this->bookService->getAllBooks());
     }
 
     /**
@@ -81,7 +119,7 @@ class BookController extends Controller
     {
         $dto = new BookUpdateDTO(...$request->validated());
         $service = $this->bookService->update($dto);
-        $resource = BookResource::make($service);
+        $resource = BookWithoutAuthorsResource::make($service);
 
         return $resource->response()->setStatusCode(200);
     }

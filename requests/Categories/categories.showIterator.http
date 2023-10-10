@@ -1,0 +1,7 @@
+GET http://localhost/api/categoryIterator/1
+Accept: application/json
+Content-Type: application/json
+
+{
+    "id": 1
+}

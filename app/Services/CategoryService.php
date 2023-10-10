@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Category;
 use App\Repositories\Categories\CategoryRepository;
 use App\Repositories\Categories\CategoryStoreDTO;
 use App\Repositories\Categories\CategoryUpdateDTO;
 use App\Repositories\Categories\Iterators\CategoryIterator;
+use App\Repositories\Categories\Iterators\CategoryWithBooksIterator;
+use App\Repositories\Categories\Iterators\CategoryWithoutBooksIterator;
 use Illuminate\Support\Collection;
 
 class CategoryService
@@ -28,9 +31,9 @@ class CategoryService
 
     /**
      * @param  CategoryStoreDTO  $data
-     * @return CategoryIterator
+     * @return CategoryWithoutBooksIterator
      */
-    public function store(CategoryStoreDTO $data): CategoryIterator
+    public function store(CategoryStoreDTO $data): CategoryWithoutBooksIterator
     {
         $categoryId = $this->categoryRepository->store($data);
         return $this->categoryRepository->getById($categoryId);
@@ -38,18 +41,36 @@ class CategoryService
 
     /**
      * @param  int  $id
-     * @return CategoryIterator
+     * @return CategoryWithoutBooksIterator
      */
-    public function show(int $id): CategoryIterator
+    public function show(int $id): CategoryWithoutBooksIterator
     {
         return $this->categoryRepository->getById($id);
     }
 
     /**
-     * @param  CategoryUpdateDTO  $data
-     * @return CategoryIterator
+     * @param int $id
+     * @return CategoryWithBooksIterator
      */
-    public function update(CategoryUpdateDTO $data): CategoryIterator
+    public function showIterator(int $id): CategoryWithBooksIterator
+    {
+        return $this->categoryRepository->getByIdIterator($id);
+    }
+
+    /**
+     * @param int $id
+     * @return Category
+     */
+    public function showModel(int $id): Category
+    {
+        return $this->categoryRepository->getByIdModel($id);
+    }
+
+    /**
+     * @param  CategoryUpdateDTO  $data
+     * @return CategoryWithoutBooksIterator
+     */
+    public function update(CategoryUpdateDTO $data): CategoryWithoutBooksIterator
     {
         $this->categoryRepository->update($data);
         return $this->categoryRepository->getById($data->getId());

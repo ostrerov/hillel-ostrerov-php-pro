@@ -2,7 +2,10 @@
 
 namespace App\Repositories\Books;
 
+use App\Models\Book;
 use App\Repositories\Books\Iterators\BookIterator;
+use App\Repositories\Books\Iterators\BooksIterator;
+use App\Repositories\Books\Iterators\BookWithoutAuthorsIterator;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
@@ -96,29 +99,82 @@ class BookRepository
 
     /**
      * @param int $id
-     * @return BookIterator
+     * @return BookWithoutAuthorsIterator
      */
-    public function getById(int $id): BookIterator
+    public function getById(int $id): BookWithoutAuthorsIterator
     {
-        return new BookIterator(
-            DB::table('books')
-                ->select([
-                    'books.id',
-                    'books.name',
-                    'books.year',
-                    'books.lang',
-                    'books.pages',
-                    'books.created_at',
-                    'books.category_id',
-                    'categories.name as category_name',
-                    'books.created_at',
-                    'books.updated_at',
-                    'books.deleted_at'
-                ])
-                ->join('categories', 'categories.id', '=', 'books.category_id')
-                ->where('books.id', '=', $id)
-                ->first()
-        );
+        $bookQuery = $this->query
+            ->select([
+                'books.id',
+                'books.name',
+                'year',
+                'lang',
+                'books.pages',
+                'books.created_at',
+                'category_id',
+                'categories.name as category_name'
+            ])
+            ->join('categories', 'categories.id', '=', 'books.category_id')
+            ->where('books.id', '=', $id)
+            ->first();
+
+        return new BookWithoutAuthorsIterator((object)[
+            'id'            => $bookQuery->id,
+            'name'          => $bookQuery->name,
+            'year'          => $bookQuery->year,
+            'category'      => (object)[
+                'id'        => $bookQuery->category_id,
+                'name'      => $bookQuery->category_name,
+            ],
+            'lang'          => $bookQuery->lang,
+            'pages'         => $bookQuery->pages,
+            'created_at'    => $bookQuery->created_at,
+        ]);
+    }
+
+    /**
+     * @param int $lastId
+     * @return BooksIterator
+     */
+    public function getDataByIterator(int $lastId = 0): BooksIterator
+    {
+        $result = $this->query
+            ->select([
+                'books.id',
+                'books.name',
+                'year',
+                'lang',
+                'pages',
+                'category_id',
+                'categories.name as category_name',
+                'books.created_at',
+                'books.updated_at',
+                'authors.id as author_id',
+                'authors.name as author_name',
+            ])
+            ->leftJoin('categories', 'categories.id', '=', 'books.category_id')
+            ->join('author_book', 'books.id', '=', 'author_book.book_id')
+            ->join('authors', 'author_book.author_id', '=', 'authors.id')
+            ->orderBy('books.id')
+            ->where('books.id', '>', $lastId)
+            ->limit(2000)
+            ->get();
+
+        return new BooksIterator($result);
+    }
+
+    /**
+     * @param int $lastId
+     * @return Collection
+     */
+    public function getDataByModel(int $lastId = 0): Collection
+    {
+        return Book::query()
+            ->with(['authors', 'category'])
+            ->where('id', '>', $lastId)
+            ->orderBy('id')
+            ->limit(2000)
+            ->get();
     }
 
     /**
@@ -126,12 +182,14 @@ class BookRepository
      */
     public function getAllBooks(): Collection
     {
-        $max = 10000000;
+        $lastId = 1;
         $collection = DB::table('books')
             ->select([
                 'books.id',
                 'books.name',
                 'year',
+                'lang',
+                'pages',
                 'books.created_at',
                 'category_id',
                 'categories.name as category_name',
@@ -139,11 +197,23 @@ class BookRepository
             ->join('categories', 'categories.id', '=', 'books.category_id')
             ->orderBy('books.id')
             ->limit(2)
-            ->where('books.id', '>', $max)
+            ->where('books.id', '>', $lastId)
             ->get();
 
         return $collection->map(function ($item) {
-            return new BookIterator($item);
+            return new BookWithoutAuthorsIterator(
+                (object)[
+                'id'            => $item->id,
+                'name'          => $item->name,
+                'year'          => $item->year,
+                'category'      => (object)[
+                    'id'        => $item->category_id,
+                    'name'      => $item->category_name,
+                ],
+                'lang'          => $item->lang,
+                'pages'         => $item->pages,
+                'created_at'    => $item->created_at,
+            ]);
         });
     }
 

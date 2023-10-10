@@ -1,10 +1,8 @@
-GET http://localhost/api/books/?lastId=2
-Content-Type: application/json
+GET http://localhost/api/books
 Accept: application/json
+Content-Type: application/json
 
 {
     "startDate": "1970-01-01",
-    "endDate": "1990-01-01",
-    "lang": "en",
-    "year": 1990
+    "endDate": "1990-01-01"
 }

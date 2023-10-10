@@ -1,0 +1,7 @@
+POST http://localhost/api/categories
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "Lorem Ipsum"
+}

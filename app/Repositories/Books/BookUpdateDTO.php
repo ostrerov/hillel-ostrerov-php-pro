@@ -2,22 +2,24 @@
 
 namespace App\Repositories\Books;
 
+use App\Enums\Lang;
+
 class BookUpdateDTO
 {
 
     /**
-     * @param  int  $id
-     * @param  string  $name
-     * @param  int  $year
-     * @param  string  $lang
-     * @param  int  $pages
-     * @param  int  $categoryId
+     * @param int $id
+     * @param string $name
+     * @param int $year
+     * @param Lang $lang
+     * @param int $pages
+     * @param int $categoryId
      */
     public function __construct(
         protected readonly int $id,
         protected string $name,
         protected int $year,
-        protected string $lang,
+        protected Lang $lang,
         protected int $pages,
         protected int $categoryId
     ) {
@@ -48,9 +50,9 @@ class BookUpdateDTO
     }
 
     /**
-     * @return string
+     * @return Lang
      */
-    public function getLang(): string
+    public function getLang(): Lang
     {
         return $this->lang;
     }

@@ -1,0 +1,11 @@
+PATCH http://localhost/api/books/1200002
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "te23st12323423423",
+    "year": "1984",
+    "lang": "en",
+    "pages": 1932,
+    "categoryId": 5
+}

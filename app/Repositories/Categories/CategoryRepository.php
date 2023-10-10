@@ -2,7 +2,11 @@
 
 namespace App\Repositories\Categories;
 
+use App\Models\Category;
+use App\Repositories\Books\Iterators\BooksWithoutJoinsIterator;
 use App\Repositories\Categories\Iterators\CategoryIterator;
+use App\Repositories\Categories\Iterators\CategoryWithBooksIterator;
+use App\Repositories\Categories\Iterators\CategoryWithoutBooksIterator;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
@@ -11,15 +15,22 @@ use Illuminate\Support\Facades\DB;
 
 class CategoryRepository
 {
+    protected Builder $query;
+
+    public function __construct()
+    {
+        $this->query = DB::table('categories');
+    }
+
     /**
      * @return Collection
      */
     public function index(): Collection
     {
-        $collection = DB::table('categories')->get();
+        $collection = $this->query->get();
 
         return $collection->map(function (object $item) {
-           return new CategoryIterator($item->id, $item->name);
+           return new CategoryWithoutBooksIterator($item);
         });
     }
 
@@ -29,7 +40,7 @@ class CategoryRepository
      */
     public function store(CategoryStoreDTO $data): int
     {
-        return DB::table('books')->insertGetId([
+        return $this->query->insertGetId([
             'name' => $data->getName(),
             'created_at' => Carbon::now()->timezone('Europe/Kyiv'),
         ]);
@@ -41,7 +52,7 @@ class CategoryRepository
      */
     public function show(int $id): Model|Builder|null
     {
-        return DB::table('books')->where('id', '=', $id)->first();
+        return $this->query->where('id', '=', $id)->first();
     }
 
     /**
@@ -50,8 +61,7 @@ class CategoryRepository
      */
     public function update(CategoryUpdateDTO $data): int
     {
-        DB::table('books')
-            ->where('id', '=', $data->getId())
+        $this->query->where('id', '=', $data->getId())
             ->update([
                 'name' => $data->getName(),
                 'updated_at' => Carbon::now()->timezone('Europe/Kyiv'),
@@ -61,22 +71,22 @@ class CategoryRepository
     }
 
     /**
-     * @param  int  $id
-     * @return int
+     * @param int $id
+     * @return void
      */
     public function destroy(int $id): void
     {
-        DB::table('books')->where('id', '=', $id)->delete();
+        $this->query->where('id', '=', $id)->delete();
     }
 
     /**
      * @param  int  $id
-     * @return CategoryIterator
+     * @return CategoryWithoutBooksIterator
      */
-    public function getById(int $id): CategoryIterator
+    public function getById(int $id): CategoryWithoutBooksIterator
     {
-        return new CategoryIterator(
-            DB::table('books')
+        return new CategoryWithoutBooksIterator(
+            $this->query
                 ->select([
                     'categories.id',
                     'categories.name',
@@ -89,12 +99,46 @@ class CategoryRepository
         );
     }
 
+    public function getByIdIterator(int $id): CategoryWithBooksIterator
+    {
+        $result = $this->query
+            ->select([
+                'categories.id as category_id',
+                'categories.name as category_name',
+                'books.id',
+                'books.name',
+                'books.year',
+                'books.lang',
+                'books.pages',
+                'books.created_at',
+                'books.updated_at',
+            ])
+            ->join('books', 'categories.id', '=', 'books.category_id')
+            ->where('categories.id', '=', $id)
+            ->limit(10)
+            ->get();
+
+        return new CategoryWithBooksIterator($result);
+    }
+
+    public function getByIdModel(int $id): Category
+    {
+        return Category::query()
+            ->with('books', function ($books) {
+                return $books->limit(10);
+            })
+            ->whereId($id)
+            ->first();
+    }
+
     /**
      * @return Collection
      */
     public function getAllCategories(): Collection
     {
-        $max = 100000;
+        $limit = 1000000;
+        $lastId = 5;
+
         $collection = DB::table('categories')
             ->select([
                 'categories.id',
@@ -103,12 +147,12 @@ class CategoryRepository
                 'categories.updated_at',
                 'categories.deleted_at'
             ])
-            ->limit($max)
-            ->where('categories.id', '>', $max)
+            ->limit($limit)
+            ->where('categories.id', '>', $lastId)
             ->get();
 
         return $collection->map(function ($items) {
-            return new CategoryIterator($items);
+            return new CategoryWithoutBooksIterator($items);
         });
     }
 }

@@ -1,0 +1,11 @@
+POST http://localhost/api/books
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "test123sdgdsfgdsfg",
+    "year": "1984",
+    "lang": "en",
+    "pages": 1984,
+    "categoryId": 200
+}

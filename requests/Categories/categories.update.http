@@ -1,0 +1,7 @@
+PATCH http://localhost/api/categories/201
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "Lorem Ipsum123"
+}

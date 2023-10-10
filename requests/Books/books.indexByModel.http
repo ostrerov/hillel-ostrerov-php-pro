@@ -1,0 +1,7 @@
+GET http://localhost/api/booksModel
+Accept: application/json
+Content-Type: application/json
+
+{
+    "lastId": 1
+}
