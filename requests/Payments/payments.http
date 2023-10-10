@@ -1,0 +1,14 @@
+GET http://localhost/api/payment/makePayment/1
+Content-Type: application/json
+Accept: application/json
+Cookie: XDEBUG_SESSION=PHPSTORM
+
+####
+POST http://localhost/api/payment/confirm/1
+Content-Type: application/json
+Accept: application/json
+Cookie: XDEBUG_SESSION=PHPSTORM
+
+{
+    "paymentId": ""
+}

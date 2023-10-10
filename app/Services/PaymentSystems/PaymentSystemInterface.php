@@ -2,13 +2,20 @@
 
 namespace App\Services\PaymentSystems;
 
+use App\Services\PaymentSystems\ConfirmPayment\PaymentInfoDTO;
 use App\Services\PaymentSystems\DTO\MakePaymentDTO;
 
 interface PaymentSystemInterface
 {
     /**
-     * @param MakePaymentDTO $makePaymentDTO
-     * @return bool
+     * @param string $paymentId
+     * @return PaymentInfoDTO
      */
-    public function makePayment(MakePaymentDTO $makePaymentDTO): bool;
+    public function validatePayment(string $paymentId): PaymentInfoDTO;
+
+    /**
+     * @param MakePaymentDTO $makePaymentDTO
+     * @return string
+     */
+    public function createPayment(MakePaymentDTO $makePaymentDTO): string;
 }

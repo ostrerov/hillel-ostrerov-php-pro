@@ -9,6 +9,7 @@ class MakePaymentDTO
     public function __construct(
         protected float $amount,
         protected Currency $currency,
+        protected string $orderId,
         protected string $description = '',
     ) {
     }
@@ -35,5 +36,13 @@ class MakePaymentDTO
     public function getDescription(): string
     {
         return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrderId(): string
+    {
+        return $this->orderId;
     }
 }

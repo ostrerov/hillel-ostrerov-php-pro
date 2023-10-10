@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PaymentSystemController;
 use App\Http\Middleware\GuestMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/profile', [AuthenticationController::class, 'profile'])->name('profile');
     Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
 });
+
+Route::get('payment/makePayment/{system}', [PaymentSystemController::class, 'createPayment'])->name('payment.create');
+Route::post('payment/confirm/{system}', [PaymentSystemController::class, 'confirmPayment'])
+    ->name('payment.confirm');
 
 Route::middleware(GuestMiddleware::class)->group(function () {
     Route::post('/login', [AuthenticationController::class, 'login'])->name('login');
