@@ -2,10 +2,10 @@
 
 namespace App\Services\PaymentSystems\ConfirmPayment;
 
-use App\Enums\PaymentSystem;
 use App\Services\PaymentSystems\ConfirmPayment\Handlers\CheckPaymentResultHandler;
 use App\Services\PaymentSystems\ConfirmPayment\Handlers\SavePaymentResultHandler;
 use Illuminate\Pipeline\Pipeline;
+use Ostrerov\Pakage\Enums\PaymentSystem;
 
 class ConfirmPaymentService
 {
