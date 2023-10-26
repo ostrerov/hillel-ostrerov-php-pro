@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => 'auth:api'], function () {
+Route::group(['middleware' => ['auth:api', 'getUserAction']], function () {
     Route::get('/booksIterator', [BookController::class, 'getDataByIterator'])->name('books.indexByIterator');
     Route::get('/booksModel', [BookController::class, 'getDataByModel'])->name('books.indexByModel');
     Route::get('/books/all', [BookController::class, 'showAll'])->name('books.all');
