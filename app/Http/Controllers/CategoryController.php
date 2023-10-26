@@ -6,13 +6,13 @@ use App\Http\Requests\Category\DestoryCategoryRequest;
 use App\Http\Requests\Category\ShowCategoryRequest;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
-use App\Http\Requests\CategoryShowRequest;
 use App\Http\Resources\Category\CategoryModelResource;
 use App\Http\Resources\Category\CategoryResource;
 use App\Http\Resources\Category\CategoryWithoutBooksResource;
 use App\Repositories\Categories\CategoryStoreDTO;
 use App\Repositories\Categories\CategoryUpdateDTO;
 use App\Services\CategoryService;
+use App\Services\CategoryWithCacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -20,10 +20,12 @@ use Illuminate\Http\Response;
 class CategoryController
 {
     /**
-     * @param  CategoryService  $categoryService
+     * @param CategoryService $categoryService
+     * @param CategoryWithCacheService $categoryWithCacheService
      */
     public function __construct(
         protected CategoryService $categoryService,
+        protected CategoryWithCacheService $categoryWithCacheService,
     ) {
     }
 
@@ -35,6 +37,17 @@ class CategoryController
         return CategoryWithoutBooksResource::collection(
             $this->categoryService->getAllCategories()
         );
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function cachedIndex(): JsonResponse
+    {
+        $service = $this->categoryWithCacheService->getCategories();
+
+        $resource = CategoryWithoutBooksResource::collection($service);
+        return $resource->response()->setStatusCode(200);
     }
 
     /**
@@ -64,10 +77,10 @@ class CategoryController
     }
 
     /**
-     * @param CategoryShowRequest $request
+     * @param ShowCategoryRequest $request
      * @return JsonResponse
      */
-    public function showIterator(CategoryShowRequest $request): JsonResponse
+    public function showIterator(ShowCategoryRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
         $service = $this->categoryService->showIterator($validatedData['id']);
@@ -78,10 +91,10 @@ class CategoryController
     }
 
     /**
-     * @param CategoryShowRequest $request
+     * @param ShowCategoryRequest $request
      * @return JsonResponse
      */
-    public function showModel(CategoryShowRequest $request): JsonResponse
+    public function showModel(ShowCategoryRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
         $service = $this->categoryService->showModel($validatedData['id']);

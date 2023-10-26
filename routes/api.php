@@ -31,6 +31,8 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('/profile', [AuthenticationController::class, 'profile'])->name('profile');
     Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
+
+    Route::get('/categoriesCache', [CategoryController::class, 'cachedIndex'])->name('categories.cachedIndex');
 });
 
 Route::get('payment/makePayment/{system}', [PaymentSystemController::class, 'createPayment'])->name('payment.create');
