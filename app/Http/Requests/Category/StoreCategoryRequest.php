@@ -9,7 +9,7 @@ class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'min:6', 'unique:categories']
+            'name' => ['required', 'min:6', 'string']
         ];
     }
 }

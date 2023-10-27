@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Proxy;
 
 use App\Services\Proxy\WebShareService;
 use GuzzleHttp\Exception\GuzzleException;
@@ -13,7 +13,7 @@ class Proxy extends Command
      *
      * @var string
      */
-    protected $signature = 'app:get-proxy';
+    protected $signature = 'proxy:get';
 
     /**
      * The console command description.

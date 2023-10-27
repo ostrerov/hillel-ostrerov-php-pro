@@ -92,7 +92,6 @@ class CategoryRepository
                     'categories.name',
                     'categories.created_at',
                     'categories.updated_at',
-                    'categories.deleted_at'
                 ])
                 ->where('id', '=', $id)
                 ->first()
@@ -154,5 +153,16 @@ class CategoryRepository
         return $collection->map(function ($items) {
             return new CategoryWithoutBooksIterator($items);
         });
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function isExistsByName(string $name): bool
+    {
+        return $this->query
+            ->where('name', '=', $name)
+            ->exists();
     }
 }
