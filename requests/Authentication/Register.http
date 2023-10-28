@@ -1,0 +1,10 @@
+POST http://php-pro.loc/api/v1/register
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Yevgenii",
+    "email": "a@a.loc",
+    "password": "Secret123",
+    "password_confirmation": "Secret123"
+}
