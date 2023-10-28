@@ -2,6 +2,8 @@
 
 namespace App\Services\Proxy;
 
+use Illuminate\Support\Facades\Redis;
+
 class ProxiesStorage
 {
     private const KEY = 'proxies';
@@ -40,5 +42,10 @@ class ProxiesStorage
     public function del(): void
     {
         Redis::del(self::KEY);
+    }
+
+    public function llen()
+    {
+        return Redis::llen(self::KEY);
     }
 }
