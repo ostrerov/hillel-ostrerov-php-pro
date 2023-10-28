@@ -4,14 +4,15 @@ namespace App\Services\Proxy;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Facades\Redis;
 
 class WebShareService
 {
     public function __construct(
-        protected GuzzleClient $guzzleClient
+        protected GuzzleClient $guzzleClient,
+        protected ProxiesStorage $proxiesStorage,
     ) {
     }
+
 
     /**
      * @throws GuzzleException
@@ -29,10 +30,8 @@ class WebShareService
                 ]
             ]
         );
-
         $content = $response->getBody()->getContents();
         $proxies = [];
-
         foreach (json_decode($content)->results as $result) {
             $proxy = [
                 'username'      => $result->username,
@@ -40,13 +39,11 @@ class WebShareService
                 'ip'            => $result->proxy_address,
                 'port'          => $result->port,
             ];
-            Redis::lpush('proxies', json_encode($proxy));
+            $this->proxiesStorage->lpush(new ProxyDTO(...$proxy));
             $proxies[] = $proxy;
         }
-
         print_r($proxies);
     }
-
     public function refreshProxyList(): void
     {
         $request = $this->guzzleClient->post(
@@ -57,9 +54,7 @@ class WebShareService
                 ],
             ]
         );
-
         $response = $request->getBody()->getContents();
-
         foreach (json_decode($response)->results as $result) {
             $proxy = [
                 'username'      => $result->username,
@@ -67,8 +62,17 @@ class WebShareService
                 'ip'            => $result->proxy_address,
                 'port'          => $result->port,
             ];
+            $this->proxiesStorage->rpush(new ProxyDTO(...$proxy));
+        }
+    }
 
-            Redis::rpush('proxies', json_encode($proxy));
+    /**
+     * @throws GuzzleException
+     */
+    public function checkProxyList(): void
+    {
+        if ($this->proxiesStorage->llen() < 1) {
+            $this->getProxyList();
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Repositories\AuthorBook\AuthorBookRepository;
 use App\Repositories\Books\BookIndexDTO;
 use App\Repositories\Books\BookRepository;
 use App\Repositories\Books\BookStoreDTO;
@@ -18,6 +19,7 @@ class BookService
      */
     public function __construct(
         protected BookRepository $bookRepository,
+        protected AuthorBookRepository $authorBookRepository,
     ) {
     }
 
@@ -75,6 +77,12 @@ class BookService
     {
         $bookId = $this->bookRepository->store($data);
         return $this->bookRepository->getById($bookId);
+    }
+
+    public function storeWithAuthor(BookStoreDTO $data): void
+    {
+        $bookId = $this->bookRepository->store($data);
+        $this->authorBookRepository->joinAuthorToBook($bookId, $data->getAuthorId());
     }
 
     /**

@@ -13,13 +13,15 @@ class BookStoreDTO
      * @param Lang $lang
      * @param int $pages
      * @param int $categoryId
+     * @param ?int $authorId
      */
     public function __construct(
         protected string $name,
         protected int $year,
         protected Lang $lang,
         protected int $pages,
-        protected int $categoryId
+        protected int $categoryId,
+        protected ?int $authorId = null,
     ) {
     }
 
@@ -61,5 +63,10 @@ class BookStoreDTO
     public function getCategoryId(): int
     {
         return $this->categoryId;
+    }
+
+    public function getAuthorId(): ?int
+    {
+        return $this->authorId;
     }
 }

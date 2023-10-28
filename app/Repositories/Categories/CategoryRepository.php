@@ -7,6 +7,7 @@ use App\Repositories\Books\Iterators\BooksWithoutJoinsIterator;
 use App\Repositories\Categories\Iterators\CategoryIterator;
 use App\Repositories\Categories\Iterators\CategoryWithBooksIterator;
 use App\Repositories\Categories\Iterators\CategoryWithoutBooksIterator;
+use App\Services\RabbitMQ\Messages\CategoryCreateMessageDTO;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
@@ -38,9 +39,17 @@ class CategoryRepository
      * @param  CategoryStoreDTO  $data
      * @return int
      */
-    public function store(CategoryStoreDTO $data): int
+    public function insertAndGetId(CategoryStoreDTO $data): int
     {
         return $this->query->insertGetId([
+            'name' => $data->getName(),
+            'created_at' => Carbon::now()->timezone('Europe/Kyiv'),
+        ]);
+    }
+
+    public function insert(CategoryCreateMessageDTO $data): bool
+    {
+        return $this->query->insert([
             'name' => $data->getName(),
             'created_at' => Carbon::now()->timezone('Europe/Kyiv'),
         ]);
